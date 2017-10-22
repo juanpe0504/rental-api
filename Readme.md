@@ -14,18 +14,19 @@ El proyecto se realizo creando un pequeño modelo de datos que consiste en 2 tab
 RentalsType cuenta con 4 propiedades que son: 
 
 	int id;               Identificador del objeto 
-  String description;   Descripcion del tipo de rentals 
-  double  tarifa;       Tarifa a cobrar 
-  double  descuento;    Descuento asociado 
-
+	String description;   Descripcion del tipo de rentals 
+	double  tarifa;       Tarifa a cobrar 
+	double  descuento;    Descuento asociado
+    
 Rentals cuenta con 6 propiedades que son:
 
-  public int id;             Identificador del objeto
-  public int id_parent;      ID para identificar Hijos y padres
-  public String description; Descripcion del tipo de rentals
-  public int id_type;        Tipo de Rentals
-  public double total;       Valor total del Rentals
-  public int timing;         La cantidad de horas, semanas, dias contabilizados
+	public int id;             Identificador del objeto
+	public int id_parent;      ID para identificar Hijos y padres
+	public String description; Descripcion del tipo de rentals
+	public int id_type;        Tipo de Rentals
+	public double total;       Valor total del Rentals
+	public int id_type;        Tipo de Rentals
+	public int timing;         La cantidad de horas, semanas, dias contabilizados
 
  Una ves armado el modelo se creo un proyecto en netbeans para permitir conexiones locales a un archivo json. Asi, permite la ejecucion y prueba rapida de estos servicios. A continuacion los servicios creados:
 
@@ -34,7 +35,8 @@ Servicios GET:
 	/getRentals      Permite obtener todos los Rentals existentes.
 	/getRentalsTypes Permite obtener todos los tipos de rentals registrados
 
-POST
+Servicios POST:
+
 	/getRentalsTypesById  Permite seleccionar los tipos de rentals por id
 	/getRentalsByType     Permite seleccionar los rentals segun su tipo de rentals 
 	/getRentalsByParent   Permite seleccionar los rentals por padre
