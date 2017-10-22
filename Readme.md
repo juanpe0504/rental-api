@@ -2,7 +2,7 @@ Autor: Juan Pereira
 
 #Rental Api
 
-El siguiente es un proyecto para consumir servicios RESTfull en java utilizando Glassfish Server 4.1
+El siguiente es un proyecto para consumir servicios RESTfull en java utilizando Glassfish Server 4.1 y JRE 1.8.0_71.
 
 
 Getting Started
@@ -10,11 +10,11 @@ Getting Started
 El proyecto se puede obtener directamente de la carpeta /dist y copiarlo a un glassfish server. Tambien se puede clonar el repositorio, abrir en Netbeans 8, y pulsar el boton Play para mostrar una interfaz sencilla para consumir los servicios.
 
 El proyecto se realizo creando un pequeño modelo de datos que consiste en 2 tablas. Una de ella de nombre Rentals y la segunda RentalsType. Este pequeño modelo relaciona ambas tablas a traves de un foreign key en la tabla Rentals que apunta al id de la tabla RentalsType, asi como tambien un foreign key a si mismo por si el objeto es de tipo Promocion Familiar. Esto ultimo es para cumplir con la condicion solicitada de que se debe manejar un descuento especial.
-RentalsType cuenta con 4 propiedades que son:
-	int id;               Identificador del objeto
-  String description;   Descripcion del tipo de rentals
-  double  tarifa;       Tarifa a cobrar 
-  double  descuento;    Descuento asociado
+RentalsType cuenta con 4 propiedades que son: \n
+	int id;               Identificador del objeto \n
+  String description;   Descripcion del tipo de rentals \n
+  double  tarifa;       Tarifa a cobrar \n
+  double  descuento;    Descuento asociado \n
 
 Rentals cuenta con 6 propiedades que son:
   public int id;             Identificador del objeto
