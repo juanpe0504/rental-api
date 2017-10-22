@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>Rental Api</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+      .header{
+        font-weight: 800;
+      }
+      .hidden{
+        display: none;
+      }
+      .m-t-md{
+        margin-top:20px;
+      }
+      .p-md{
+        padding: 20px;
+      }
+      .m-v-xs{
+        margin-top: 3px;
+        margin-bottom: 3px;
+      }
+      .p-xs{
+        padding: 3px;
+      }
+      
+    </style>
+  </head>
+  <body>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+               
+        getRentTypesSelectors();
+        $("#rentals").click(function(){          
+          getRents();
+          $("#tableRentals").removeClass("hidden");           
+          $("#tableRentalsType").addClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          $("#automatedTest").addClass("hidden");
+          $("#formNewRental").addClass("hidden");
+        });
+        $("#rentalsType").click(function(){          
+          getRentTypes();
+          $("#tableRentals").addClass("hidden");           
+          $("#tableRentalsType").removeClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          $("#automatedTest").addClass("hidden");
+          $("#formNewRental").addClass("hidden");
+        });
+        $("#newRentals").click(function(){          
+          $("#tableRentals").addClass("hidden");           
+          $("#tableRentalsType").addClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          $("#automatedTest").addClass("hidden");
+          $("#formNewRental").removeClass("hidden");
+          $("#editing").val(0);
+          $("#checkFamiliarGroup").removeClass("hidden");
+          cleanForm();
+        });
+        
+        
+        $(".cancel").click(function(){    
+          $("#listType").empty();
+          $("#list").empty();
+          $("#listDetails").empty();
+          $("#tableRentals").addClass("hidden");           
+          $("#tableRentalsType").addClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          $("#formNewRental").addClass("hidden");
+          $("#automatedTest").addClass("hidden");
+        });
+        
+        $("#tests").click(function(){          
+          $("#tableRentals").addClass("hidden");           
+          $("#tableRentalsType").addClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          $("#formNewRental").addClass("hidden");
+          $("#automatedTest").removeClass("hidden");
+        });
+        
+        $("#createTest").click(function(){          
+          runTestCreate();
+        });
+        
+        $("#createFamiliarTest").click(function(){          
+          runTestCreateFamiliar();
+        });
+        
+        
+        
+        $("#checkFamiliar").click( function(){
+          if( $(this).is(':checked') ){
+            $("#familiarPromoSelected").removeClass("hidden");
+          }else{
+            $("#familiarPromoSelected").addClass("hidden");
+          }
+        });
+        
+        $("#saveRental").click( function(){
+          
+          var isFamiliarPromo = $("#checkFamiliar").is(':checked');
+          var rentType1 = $("#rentTypeSelector").val();
+          var description = $("#description").val();
+          var timing = $("#timing").val();
+          
+          var editing = $("#editing").val();
+          
+          
+          if (parseInt(editing) == 1){
+            var id = $("#id_rentals").val();
+            var rent = makeRentObj(rentType1,-1,0,description,timing);
+            rent.id = id;
+            updateRentals(rent).then(
+              function (result) {
+                getRents();
+              },
+              function (xhr, status, errorThrown) {
+              }
+            );
+              
+          }else{
+          
+            if(isFamiliarPromo){
+              var rentType2 = $("#rentTypeSelector2").val();
+              var description2 = $("#description2").val();
+              var timing2 = $("#timing2").val();
+              var rentType3 = $("#rentTypeSelector3").val();
+              var description3 = $("#description3").val();
+              var timing3 = $("#timing3").val();
+              var rentType4 = $("#rentTypeSelector4").val();
+              var description4 = $("#description4").val();
+              var timing4 = $("#timing4").val();
+              var rentType5 = $("#rentTypeSelector5").val();
+              var description5 = $("#description5").val();
+              var timing5 = $("#timing5").val();
+
+              var rent = makeRentObj(rentType1,-1,4,description,timing);            
+              var deferred = createRentals(rent);
+
+              deferred.then(
+                function (result) {
+                  var id_parent = result.id_parent;
+                  rent = makeRentObj(rentType2,id_parent,4,description2,timing2);
+                  createRentals(rent);
+                  rent = makeRentObj(rentType3,id_parent,4,description3,timing3);
+                  createRentals(rent);
+                  if (description4 !== "" && timing4 > 0){
+                    rent = makeRentObj(rentType4,id_parent,4,description4,timing4);
+                    createRentals(rent);
+                  }
+                  if (description5 !== "" && timing5 > 0){
+                    rent = makeRentObj(rentType5,id_parent,4,description5,timing5);
+                    createRentals(rent);
+                  }
+                  getRents();
+                },
+                function (xhr, status, errorThrown) {
+                }
+              );            
+
+            } else {
+              var rent = makeRentObj(rentType1,-1,0,description,timing);
+              createRentals(rent).then(
+                function (result) {
+                  getRents();
+                },
+                function (xhr, status, errorThrown) {
+                });
+            }
+            
+          }
+          
+          cleanForm();
+          $("#tableRentals").removeClass("hidden");     
+          $("#tableRentalsType").addClass("hidden");
+          $("#formNewRental").addClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          $("#automatedTest").addClass("hidden");
+          
+          
+        });
+        
+        $("#rentalsByType").click( function(){
+          
+          var rentTypeSelected = $("#rentTypeSearcher").val();
+          getRentsByType(rentTypeSelected);
+          
+          //if rentTypeSelected 
+          
+          //cleanForm();
+          $("#tableRentals").removeClass("hidden");
+          $("#formNewRental").addClass("hidden");
+          $("#tableRentalsType").addClass("hidden");
+          $("#tableFamiliarRentals").addClass("hidden");
+          
+          
+        });
+    });
+    
+    
+    </script>
+    <script type="text/javascript">
+    
+      var api = "http://localhost:8080/rentals/webresources/Rental/";
+        
+      function getRents(){
+        $("#list").empty();
+        $.ajax({
+            type: 'GET',
+            url: api + "getRentals",
+            success:function(data){ 
+              
+              for (var i = data.length - 1; i >= 0; i--) {
+                $("#list").append(
+                  "<div class=\"col-md-1\">" + data[i].id + ", " + data[i].id_parent +"</div>" +
+                  "<div class=\"col-md-3\">" + data[i].description + "</div>" +
+                  "<div class=\"col-md-1\">" + data[i].id_type + "</div>" +
+                  "<div class=\"col-md-2\">" + data[i].timing + "</div>" +
+                  "<div class=\"col-md-2\">" + data[i].total + " $ </div>" +
+                  "<div class=\"col-md-3\"> \n\ " +  
+                    (data[i].id_type === 4 ? 
+                      "<button class=\"btn btn-primary m-v-xs details\" type=\"button\" onclick=\"getRentsByParent("+data[i].id+")\" >Detalles</button> " 
+                      : "<button class=\"btn btn-warning m-v-xs\" type=\"button\" onclick=\"getRentsById("+data[i].id+")\" >Editar </button> " 
+                    ) +  
+                    " <button class=\"btn btn-danger m-v-xs\" type=\"button\" onclick=\"deleteRentals("+data[i].id+")\" >Eliminar\n\
+                    </button> \n\
+                  </div>"
+                );
+                
+              }              
+            }
+        });
+      }
+      
+      function getRentsByType(id){
+        $("#list").empty();
+        $.ajax({
+            type: 'POST',
+            url: api + "getRentalsByType",
+            data: JSON.stringify({"id": id}),
+            contentType: 'application/json',            
+            success:function(data){ 
+              for (var i = data.length - 1; i >= 0; i--) {
+                $("#list").append(
+                  "<div class=\"col-md-1\">" + data[i].id + ", " + data[i].id_parent +"</div>" +
+                  "<div class=\"col-md-3\">" + data[i].description + "</div>" +
+                  "<div class=\"col-md-1\">" + data[i].id_type + "</div>" +
+                  "<div class=\"col-md-2\">" + data[i].timing + "</div>" +
+                  "<div class=\"col-md-2\">" + data[i].total + " $ </div>" +
+                  "<div class=\"col-md-3\"> \n " +  
+                    (data[i].id_type === 4 ? 
+                      "<button class=\"btn btn-primary m-v-xs details\" type=\"button\" onclick=\"getRentsByParent("+data[i].id+")\" >Detalles</button> " 
+                      : "<button class=\"btn btn-warning m-v-xs\" type=\"button\" onclick=\"getRentsById("+data[i].id+")\" >Editar </button> " 
+                    ) +                     
+                    "<button class=\"btn btn-danger m-v-xs\" type=\"button\" onclick=\"deleteRentals("+data[i].id+")\" >Eliminar\n\
+                    </button> \n\
+                  </div>"
+                );
+              }              
+            }
+        });
+      }
+      
+      function getRentsByParent(id){
+        $("#tableRentals").addClass("hidden");           
+        $("#tableRentalsType").addClass("hidden");
+        $("#formNewRental").addClass("hidden");
+        $("#tableFamiliarRentals").removeClass("hidden");
+        $("#listDetails").empty();
+        $.ajax({
+            type: 'POST',
+            url: api + "getRentalsByParent",
+            data: JSON.stringify({"id_parent": id}),
+            contentType: 'application/json',            
+            success:function(data){
+              var tot = 0;
+              for (var i = data.length - 1; i >= 0; i--) {
+                
+                $("#listDetails").append(
+                  "<div class=\"col-md-2\">" + data[i].id + ", " + data[i].id_parent +"</div>" +
+                  "<div class=\"col-md-3\">" + data[i].description + "</div>" +
+                  "<div class=\"col-md-2\">" + data[i].id_type + "</div>" +
+                  "<div class=\"col-md-2\">" + data[i].timing + "</div>" +
+                  "<div class=\"col-md-3\">" + data[i].total + " $ </div>"                  
+                );
+                tot = tot + data[i].total;
+              }  
+              $("#listDetails").append(
+                "<div class=\"col-md-offset-7 col-md-2\"> Total a pagar </div>" +
+                "<div class=\"col-md-3\">" + tot +" $ </div>"                 
+              );
+              
+            }
+        });
+      }
+
+      function getRentsById(id){
+        $("#tableRentals").addClass("hidden");           
+        $("#tableRentalsType").addClass("hidden");
+        $("#formNewRental").removeClass("hidden");
+        $("#tableFamiliarRentals").addClass("hidden");
+        $("#automatedTest").addClass("hidden");
+        $.ajax({
+            type: 'POST',
+            url: api + "getRentalsById",
+            data: JSON.stringify({"id": id}),
+            contentType: 'application/json',            
+            success:function(data){
+              setValuesForm(data);
+            }
+        });
+      }
+
+
+
+      function getRentTypes(){
+        $("#listType").empty();
+        $.ajax({
+          type: 'GET',
+          url: api + "getRentalsTypes",
+          success:function(data){ 
+            for (var i = data.length - 1; i >= 0; i--) {
+              $("#listType").append(
+                "<div class=\"col-md-3\">" + data[i].id + "</div>" +
+                "<div class=\"col-md-3\">" + data[i].description + "</div>" +
+                "<div class=\"col-md-3\">" + data[i].descuento + " % </div>" +
+                "<div class=\"col-md-3\">" + data[i].tarifa + " $ </div>"
+              );
+            }              
+          }
+        });
+      }
+      
+      function getRentTypesSelectors(){
+        $.ajax({
+          type: 'GET',
+          url: api + "getRentalsTypes",
+          success:function(data){ 
+            for (var i = data.length - 1; i >= 0; i--) {
+              if (data[i].id==4){ 
+                $("#rentTypeSearcher").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                ); 
+              } else {
+                $("#rentTypeSelector").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                );
+                $("#rentTypeSelector2").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                );
+                $("#rentTypeSelector3").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                );
+                $("#rentTypeSelector4").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                );
+                $("#rentTypeSelector5").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                );
+                $("#rentTypeSearcher").append(
+                  "<option value=\"" + data[i].id + "\">" + data[i].description + "</option>"
+                );
+              }
+              
+            }              
+          }
+        });             
+      }
+
+      function createRentals(rentObj){
+        var deferred = $.Deferred();
+        
+        $.ajax({
+            url: api + "createRentals",
+            type: "POST",
+            data: JSON.stringify(rentObj),
+            contentType: 'application/json',
+            success: function (response) {
+               response.status = true;
+               deferred.resolve(response);
+               console.log("response ->",response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              deferred.resolve({status:false});
+              //console.log(textStatus, errorThrown);
+            }
+        }); 
+        return deferred.promise();
+        
+      }
+
+      function updateRentals(rentObj){
+        var deferred = $.Deferred();
+        
+        $.ajax({
+            url: api + "updateRentals",
+            type: "POST",
+            data: JSON.stringify(rentObj),
+            contentType: 'application/json',
+            success: function (response) {
+               response.status = true;
+               deferred.resolve(response);
+               console.log("response ->",response);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+              deferred.resolve({status:false});
+              //console.log(textStatus, errorThrown);
+            }
+        }); 
+        return deferred.promise();
+        
+      }
+
+
+      function deleteRentals(id){
+        
+        $.ajax({
+            url: api + "deleteRentalsById",
+            type: "POST",
+            data: JSON.stringify({"id": id}),
+            contentType: 'application/json',
+            success: function (response) {
+               getRents();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+               console.log(textStatus, errorThrown);
+            }
+        });      
+        
+      }
+
+      function makeRentObj(id_type,id_parent,id_type_parent,description,timing){
+        return  {
+                  "id_type" : id_type,
+                  "id_parent" : id_parent,
+                  "id_type_parent" : id_type_parent,
+                  "description" : description,
+                  "timing" : timing
+                };              
+      }
+
+      function cleanForm(){
+        $("#description").val("");
+        $("#timing").val("");
+        $("#description2").val("");
+        $("#timing2").val("");
+        $("#description3").val("");
+        $("#timing3").val("");
+        $("#description4").val("");
+        $("#timing4").val("");
+        $("#description5").val("");
+        $("#timing5").val("");
+        $("#checkFamiliarGroup").removeClass("hidden");
+      }
+      
+      function setValuesForm(rent){
+        $("#description").val(rent.description);
+        $("#timing").val(rent.timing);
+        $("#rentTypeSelector").val(rent.id_type);
+        $("#editing").val(1);
+        $("#id_rentals").val(rent.id);
+        $("#checkFamiliarGroup").addClass("hidden");
+      }
+      
+      
+      function runTestCreate(){
+        
+        for(var i = 1; i <= 5; i++){
+          var type = random(1);
+          var timing = random(2);
+          var rent = makeRentObj(type,-1,1,"Prueba de creacion. Insercion : " + i,timing);            
+
+          var deferred = createRentals(rent);
+          deferred.then(
+            function (data) {
+              if (data.status)
+              {
+                appendData($("#listCreateTest"),data);
+              } else {
+                appendError($("#listCreateTest"));
+              }
+              //i++;
+            },
+            function (xhr, status, errorThrown) {
+              appendError($("#listCreateTest"));
+              //i++;
+            }
+          ); 
+        }
+        
+      }  
+      
+      function runTestCreateFamiliar(){
+        
+        for(var i = 1; i <= 1; i++){
+          var type = 1;
+          var timing = random(2);
+          var rent = makeRentObj(type,-1,4,"Prueba de creacion FAMILIAR. Insercion : " + type,timing);            
+
+          var deferred = createRentals(rent);
+          deferred.then(
+            function (data) {
+              if (data.status){
+                appendData($("#listCreateFamiliarTest"),data);
+                var id_parent = data.id_parent;
+                type++;
+                rent = makeRentObj(type,id_parent,4,"Prueba de creacion FAMILIAR. Insercion : " + type,random(2));
+                createRentals(rent).then(
+                  function (data) {
+                    if (data.status)
+                    {
+                      appendData($("#listCreateFamiliarTest"),data);
+                      type++;
+                      rent = makeRentObj(type,id_parent,4,"Prueba de creacion FAMILIAR. Insercion : " + type,random(2));
+                      createRentals(rent).then(
+                        function (data) {
+                          if (data.status){ 
+                            appendData($("#listCreateFamiliarTest"),data);
+                          } else {
+                            appendError($("#listCreateFamiliarTest"));
+                          }
+                        },
+                        function (xhr, status, errorThrown) {
+                          appendError($("#listCreateFamiliarTest"));
+                        }
+                      );
+                    }else{
+                      appendError($("#listCreateFamiliarTest"));
+                    }
+                  },
+                  function (xhr, status, errorThrown) {
+                      appendError($("#listCreateFamiliarTest"));
+                  }
+                );
+        
+              } else {
+                appendError($("#listCreateFamiliarTest"));
+              }
+              //i++;
+            },
+            function (xhr, status, errorThrown) {
+              appendError($("#listCreateFamiliarTest"));
+              //i++;
+            }
+          ); 
+        }
+        
+      }  
+        
+        
+      function appendError(obj){
+        obj.append(
+          "<div class=\"col-md-3\"> -1 </div>" +
+          "<div class=\"col-md-6\"> NO SAVE </div>"+
+          "<div class=\"col-md-3\">ERROR</div>"
+        );
+      }
+      
+      function appendData(obj,data){
+        obj.append(
+          "<div class=\"col-md-3\">" + data.id +"</div>" +
+          "<div class=\"col-md-6\">" + data.description + "</div>"+
+          "<div class=\"col-md-3\">Insertado</div>"
+        );
+      }
+      
+      function random(maxLength) {
+        var text = "";
+        if (maxLength >= 2)
+          var possible = "0123456789";
+        else
+          var possible = "123";
+        
+        for (var i = 0; i < maxLength; i++)
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return parseInt(text);
+      }
+
+    </script>
+    
+    <div class="container m-t-md p-md" >
+      <button class="btn btn-primary" type="button" id="rentals" >Ver Rentas</button>
+      <button class="btn btn-primary" type="button" id="rentalsType">Ver Tipos de Rentas</button>
+      <button class="btn btn-primary" type="button" id="tests">Pruebas</button>
+      
+      <button class="btn btn-primary cancel" type="button" id="cancel" >Cancelar</button>
+    </div>
+  
+    <div id="tableRentals" class="container hidden" >
+      <div class="row">
+        <div class="col-md-4">
+          <button class="btn btn-primary" type="button" id="newRentals" >Agregar nuevo</button>
+          
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            
+            <select class="form-control" name="rentTypeSearcher" id="rentTypeSearcher"></select>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            
+            <button class="btn btn-primary" type="button" id="rentalsByType">Ver por tipo</button>
+          </div>
+        </div>
+        
+      </div>
+
+      
+      <div class="row table">
+        <div class="col-md-1 header ">
+          ID, ID_PARENT
+        </div>
+        <div class="col-md-3 header">
+          Descripcion
+        </div>
+        <div class="col-md-1 header">
+          Tipo de Renta
+        </div>
+        <div class="col-md-2 header">
+          Tiempo (horas, dias, semanas)
+        </div>
+        <div class="col-md-2 header">
+          Total a pagar
+        </div>
+        <div class="col-md-3 header">
+          Acciones
+        </div>
+      </div>
+      <div id="list" class="row table">
+
+      </div>
+    </div>
+        
+    <div id="tableRentalsType" class="container hidden" >
+
+      <div class="row table">
+        <div class="col-md-3 header ">
+          ID
+        </div>
+        <div class="col-md-3 header">
+          Descripcion
+        </div>
+        <div class="col-md-3 header">
+          Descuento
+        </div>
+        <div class="col-md-3 header">
+          Tarifa
+        </div>
+      </div>
+      <div id="listType" class="row table">
+
+      </div>
+    </div>
+    
+    <div id="tableFamiliarRentals" class="container hidden" >
+
+      <div class="row table">
+        <div class="col-md-2 header ">
+          ID, ID_PARENT
+        </div>
+        <div class="col-md-3 header">
+          Descripcion
+        </div>
+        <div class="col-md-2 header">
+          Tipo de Renta
+        </div>
+        <div class="col-md-2 header">
+          Tiempo (horas, dias, semanas)
+        </div>
+        <div class="col-md-3 header">
+          Total a pagar
+        </div>
+      </div>
+      <div id="listDetails" class="row table">
+
+      </div>
+      
+      
+    </div>
+    
+    <div id="automatedTest" class="container hidden" >
+
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#create">Creacion</a></li>
+        <li><a data-toggle="tab" href="#createFamiliar">Creacion Familiar</a></li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="create" class="tab-pane fade in active">
+          <h4>Esta prueba consiste en crear 5 registros en rentals</h4>
+          <button class="btn btn-primary" type="button" id="createTest" >Ejecutar</button>
+          
+          <div class="row table">
+            <div class="col-md-3 header ">
+              ID
+            </div>
+            <div class="col-md-6 header ">
+              Descripcion
+            </div>
+            <div class="col-md-3 header">
+              Status
+            </div>            
+          </div>
+          <div id="listCreateTest" class="row table">
+
+          </div>
+          
+          
+        </div>
+        <div id="createFamiliar" class="tab-pane fade">
+          <h4>Esta prueba consiste en crear 1 registro en rentals de tipo Familiar</h4>
+          <button class="btn btn-primary" type="button" id="createFamiliarTest" >Ejecutar</button>
+          
+          <div class="row table">
+            <div class="col-md-3 header ">
+              ID
+            </div>
+            <div class="col-md-6 header ">
+              Descripcion
+            </div>
+            <div class="col-md-3 header">
+              Status
+            </div>            
+          </div>
+          <div id="listCreateFamiliarTest" class="row table">
+
+          </div>
+          
+        </div>
+        
+      </div>
+      
+      
+    </div>
+    
+    <form id="formNewRental" class="container hidden">
+      <input type="text" class="form-control hidden" value="0" id="editing">
+      <input type="text" class="form-control hidden" value="-1" id="id_rentals">
+      
+      <div class="row" id="checkFamiliarGroup">
+        
+        <div class="col-md-12">
+          <div class="form-group">
+            <input type="checkbox" name="familiar" id="checkFamiliar" value="4" >
+            <label for="checkFamiliar">Promocion Familiar</label>
+          </div>
+        </div>
+        
+      </div>
+        
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class="control-label">Descripcion</label>
+            <input type="text" placeholder="inserte una descripcinon" class="form-control" name="description" id="description">
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class="control-label">Tiempo invertido</label>
+            <input type="number" placeholder="inserte un tiempo de renta" class="form-control" name="timing" id="timing">
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="form-group">
+            <label class="control-label">Tipo de Renta</label>
+            <select class="form-control" name="rentTypeSelector" id="rentTypeSelector">
+              
+            </select>
+          </div>
+        </div>
+        
+      </div>
+      
+      <div id="familiarPromoSelected" class="hidden">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Descripcion</label>
+              <input type="text" placeholder="inserte una descripcinon" class="form-control" name="description2" id="description2">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tiempo invertido</label>
+              <input type="number" placeholder="inserte un tiempo de renta" class="form-control" name="timing2" id="timing2">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tipo de Renta</label>
+              <select class="form-control" name="rentTypeSelector2" id="rentTypeSelector2">
+
+              </select>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Descripcion</label>
+              <input type="text" placeholder="inserte una descripcinon" class="form-control"  name="description3" id="description3">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tiempo invertido</label>
+              <input type="number" placeholder="inserte un tiempo de renta" class="form-control" name="timing3" id="timing3">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tipo de Renta</label>
+              <select class="form-control" name="rentTypeSelector3" id="rentTypeSelector3">
+
+              </select>
+            </div>
+          </div>
+
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Descripcion</label>
+              <input type="text" placeholder="inserte una descripcinon" class="form-control"  name="description4" id="description4">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tiempo invertido</label>
+              <input type="number" placeholder="inserte un tiempo de renta" class="form-control" name="timing4" id="timing4">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tipo de Renta</label>
+              <select class="form-control" name="rentTypeSelector4" id="rentTypeSelector4">
+
+              </select>
+            </div>
+          </div>
+
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Descripcion</label>
+              <input type="text" placeholder="inserte una descripcinon" class="form-control"  name="description5" id="description5">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tiempo invertido</label>
+              <input type="number" placeholder="inserte un tiempo de renta" class="form-control" name="timing5" id="timing5">
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <label class="control-label">Tipo de Renta</label>
+              <select class="form-control" name="rentTypeSelector5" id="rentTypeSelector5">
+
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <button class="btn btn-primary" type="button" id="saveRental" >Guardar</button>
+          <button class="btn btn-primary cancel" type="button" id="cancel2" >Cancelar</button>
+        </div>        
+      </div>
+      
+    </form>
+    
+    
+  </body>
+</html>
