@@ -34,60 +34,33 @@ public class Rentals_DB_Handler {
 "{\n" +
 "  \"rentals_type\": [\n" +
 "    {\n" +
-"      \"tarifa\": 5.0,\n" +
-"      \"descuento\": 0.0,\n" +
+"      \"tarifa\": 5,\n" +
+"      \"descuento\": 0,\n" +
 "      \"description\": \"Por hora\",\n" +
 "      \"id\": 1\n" +
 "    },\n" +
 "    {\n" +
-"      \"tarifa\": 20.0,\n" +
-"      \"descuento\": 0.0,\n" +
+"      \"tarifa\": 20,\n" +
+"      \"descuento\": 0,\n" +
 "      \"description\": \"Por dia\",\n" +
 "      \"id\": 2\n" +
 "    },\n" +
 "    {\n" +
-"      \"tarifa\": 60.0,\n" +
-"      \"descuento\": 0.0,\n" +
+"      \"tarifa\": 60,\n" +
+"      \"descuento\": 0,\n" +
 "      \"description\": \"Por semana\",\n" +
 "      \"id\": 3\n" +
 "    },\n" +
 "    {\n" +
-"      \"tarifa\": 1.0,\n" +
-"      \"descuento\": 30.0,\n" +
+"      \"tarifa\": 1,\n" +
+"      \"descuento\": 30,\n" +
 "      \"description\": \"Familiar\",\n" +
 "      \"id\": 4\n" +
 "    }\n" +
 "  ],\n" +
+"  \"autoIncrementId\": 1,\n" +
 "  \"rentals\": [\n" +
-"    {\n" +
-"      \"total\": 200.0,\n" +
-"      \"timing\": 200,\n" +
-"      \"description\": \"Este es el elemnto 1\",\n" +
-"      \"id_type\": 1,\n" +
-"      \"id\": 1\n" +
-"    },\n" +
-"    {\n" +
-"      \"total\": 200.0,\n" +
-"      \"timing\": 200,\n" +
-"      \"description\": \"Este es el elemnto 2\",\n" +
-"      \"id_type\": 1,\n" +
-"      \"id\": 2\n" +
-"    },\n" +
-"    {\n" +
-"      \"total\": 200.0,\n" +
-"      \"timing\": 200,\n" +
-"      \"description\": \"Este es el elemnto 3\",\n" +
-"      \"id_type\": 1,\n" +
-"      \"id\": 3\n" +
-"    },\n" +
-"    {\n" +
-"      \"total\": 100.0,\n" +
-"      \"timing\": 20,\n" +
-"      \"description\": \"Esto es una nueva Rentals\",\n" +
-"      \"id_type\": 1,\n" +
-"      \"id\": 11,\n" +
-"      \"id_parent\": -1\n" +
-"    }\n" +
+"    \n" +
 "  ]\n" +
 "}";  
   
