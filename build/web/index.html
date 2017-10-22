@@ -211,7 +211,8 @@ and open the template in the editor.
     </script>
     <script type="text/javascript">
     
-      var api = "http://localhost:8080/rentals/webresources/Rental/";
+      //console.log(document.location.origin)
+      var api = document.location.origin + "/rentals/webresources/Rental/";
         
       function getRents(){
         $("#list").empty();
@@ -388,7 +389,7 @@ and open the template in the editor.
             success: function (response) {
                response.status = true;
                deferred.resolve(response);
-               console.log("response ->",response);
+               //console.log("response ->",response);
             },
             error: function(jqXHR, textStatus, errorThrown) {
               deferred.resolve({status:false});
